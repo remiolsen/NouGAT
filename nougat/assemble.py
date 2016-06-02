@@ -311,7 +311,7 @@ def _run_cabog(global_config, sample_config, sorted_libraries_by_insert):
         command_fastqToCA += " -technology "
         command_fastqToCA += " illumina "
         command_fastqToCA += " -type "
-        command_fastqToCA += " illumina "
+        command_fastqToCA += " sanger "
         if orientation=="innie" or orientation=="none" :
             command_fastqToCA += " -innie "
             if read2 is None:
