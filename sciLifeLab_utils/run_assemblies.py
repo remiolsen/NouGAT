@@ -100,12 +100,12 @@ def main(args):
 
         #Run the job
         all_modules = {
-                "abyss": "module load abyss/1.3.5\n",
+                "abyss": "module load abyss/1.9.0\n",
                 "soapdenovo": "module load soapdenovo/2.04-r240\n",
                 "spades": "module load spades/3.6.0\n",
-                "cabog": "module load cabog/8.1\n",
+                "cabog": "module load cabog/8.3\n",
                 "allpaths": "module unload gcc\nmodule load allpathslg/52485\n",
-                "masurca": "module load masurca MaSuRCA/2.3.2\n"
+                "masurca": "module load MaSuRCA/3.1.3\n"
         }
 
         extramodules = [all_modules[tool] for tool in tools]
