@@ -79,7 +79,7 @@ def _run_abyss(global_config, sample_config, sorted_libraries_by_insert):
             libraries["mp"][libName] +=  "{} {} ".format(read1, read2)
     #now create the command
     command += "name={} ".format(outputName)
-    command += "{} ".format(program_options) # In reality optional parameters, ie. PARAM1=VALUE
+    command += "{} ".format(" ".join(program_options)) # In reality optional parameters, ie. PARAM1=VALUE
     librariesSE = ""
     librariesPE = ""
     librariesMP = ""

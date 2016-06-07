@@ -110,10 +110,11 @@ def picard_CGbias(global_config, sample_config, sorted_alignments_by_insert):
         output_header = os.path.basename(BAMfile).split(".bam")[0]
         command= ["java", "-Xmx16g", "-XX:PermSize=2g", "-jar",
                 os.path.join(picard, "picard.jar"),
-                "CollectGCBiasMetrics",
+                "CollectGcBiasMetrics",
                 "REFERENCE_SEQUENCE={}".format(sample_config["reference"]),
-                "INPUT={}".format(BAMfile), \
+                "INPUT={}".format(BAMfile),
                 "OUTPUT={}.collectGcBias.txt".format(output_header),
+                "SUMMARY_OUTPUT={}.collectGcBias.summary".format(output_header),
                 "CHART_OUTPUT={}.collectGcBias.pdf".format(output_header),
                 "ASSUME_SORTED=true", "VALIDATION_STRINGENCY=LENIENT",
                 "TMP_DIR=$TMPDIR"]
