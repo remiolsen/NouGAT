@@ -517,7 +517,7 @@ def _run_soapdenovo(global_config, sample_config, sorted_libraries_by_insert):
     if "threads" in sample_config:
         threads = ["-p", "{}".format(sample_config["threads"])]
     soap_config_file = open("configuration.txt", "w")
-    soap_config_file.write("max_rd_len=100\n")
+    soap_config_file.write("max_rd_len=150\n")
     #TODO make this a parameter in the options
     rank = 1
     for library, libraryInfo in sorted_libraries_by_insert:
