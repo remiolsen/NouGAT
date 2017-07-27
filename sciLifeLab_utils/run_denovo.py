@@ -110,6 +110,7 @@ def qc_report(state, **kwargs):
 @common_options
 @click.option('--source', required=True, type =click.Path(exists=True), help= "Path to QC analysis folder")
 @click.option('--uppnexid', required=True, type = str, help ="Destination Uppnex id")
+@click.option('--destpath', type = str, help = "Path to UPPNEX project INBOX, eg. /pica/v123/a1234567/INBOX")
 @pass_state
 def delivery(state, **kwargs):
     """Delivers deNovo data results folder to users inbox"""
