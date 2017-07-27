@@ -32,7 +32,7 @@ def main(arg):
         exit(1)
     elif not os.path.exists(dest):
         dest = arg.destpath
-    if not os.path.exists(arg.destpath):
+    if arg.destpath != None and not os.path.exists(arg.destpath):
         print("No such destpath: {}".format(arg.destpath))
         exit(1)
 
