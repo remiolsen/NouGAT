@@ -46,9 +46,9 @@ def main(args):
             if lineage == 'none':
                 sample_YAML.write(" [align, qaTools, FRC]\n")
             elif lineage in ['eukaryota', 'bacteria', 'vertebrata', 'fungi', 'metazoa',
-                'plant_early_release', 'arthropoda']:
+                'arthropoda', 'aves', 'insecta']:
                 sample_YAML.write(" [align, qaTools, FRC, BUSCO]\n")
-                sample_YAML.write("BUSCODataPath: /sw/apps/bioinfo/BUSCO/v1_lineage_sets/{}\n".format(lineage))
+                sample_YAML.write("BUSCODataPath: $BUSCO_LINEAGE_SETS/{}_odb9\n".format(lineage))
             sample_YAML.write(
                     "output: {}\n".format(sample_config_assembly["output"]))
             sample_YAML.write(
@@ -76,7 +76,7 @@ def main(args):
             sample_YAML.close
 
             # Run the job
-            extramodules = ["module load samtools\nmodule load bwa\nmodule load BUSCO/1.22\nsource $BUSCO_SETUP\n"]
+            extramodules = ["module load samtools\nmodule load bwa\nmodule load BUSCO/2.0.1\nsource $BUSCO_SETUP\n"]
             jobname = "{}_{}_{}".format(sample_dir_name, pipeline, assembler)
             submit_job(sample_YAML_name, jobname, os.getcwd(), args, extramodules)
 
