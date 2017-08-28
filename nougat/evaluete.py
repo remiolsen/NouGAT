@@ -134,7 +134,7 @@ def _run_BUSCO(global_config, sample_config, sorted_alignments_by_insert):
         os.makedirs(BUSCOfolder)
     os.chdir(BUSCOfolder)
 
-    BUSCO_data_path = sample_config["BUSCODataPath"]
+    BUSCO_data_path = os.path.expandvars(sample_config["BUSCODataPath"])
     if not os.path.exists(BUSCO_data_path):
         raise IOError("Path to the BUSCO data set does not exist!")
 
