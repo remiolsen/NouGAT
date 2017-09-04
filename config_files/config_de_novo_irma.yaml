@@ -50,8 +50,8 @@ Tools:
   bin: /lupus/ngi/production/latest/KmerGenie/kmergenie
   options: [""]
  FRC:
-  bin: /lupus/ngi/staging/latest/resources/nougat_singularity/FRC
+  bin: /lupus/ngi/production/latest/resources/singularity/nougat/FRC
   options: ""
  qaTools:
-  bin: /lupus/ngi/staging/latest/resources/nougat_singularity/qaCompute 
+  bin: /lupus/ngi/production/latest/resources/singularity/nougat/qaCompute
   options: ""
