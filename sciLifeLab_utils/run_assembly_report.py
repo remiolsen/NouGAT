@@ -218,9 +218,11 @@ def collect_results_and_report(validation_sample_dir, assemblies_sample_dir,
             summary_b = {"Complete":[], "Duplicated":[], "Fragmented":[], "Missing":[], "Total":[]}
             with open(summary_f, "r") as f:
                 for line in f:
+                    # File may or may not contain header
+                    if line.startswith("#"):
+                        continue
                     b_status = line.split()[1]
                     b_group = line.split()[0]
-                    # File may or may not contain header                    
                     if b_status in summary_b.keys():
                         summary_b[b_status].append(b_group)
                         summary_b["Total"].append(b_group)

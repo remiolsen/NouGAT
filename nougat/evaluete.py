@@ -141,7 +141,7 @@ def _run_BUSCO(global_config, sample_config, sorted_alignments_by_insert):
     reference = sample_config["reference"]
     output = sample_config["output"]
     threads = sample_config.get("threads", 16)
-    command = [program, "-l", BUSCO_data_path, "-in", "{}".format(reference), "-o", "{}".format(output), 
+    command = [program, "-l", BUSCO_data_path, "-i", "{}".format(reference), "-o", "{}".format(output), 
             "-c", "{}".format(threads)]
     command.extend(options)
     common.print_command(command)
