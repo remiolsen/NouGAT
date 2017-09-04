@@ -1,7 +1,7 @@
 Pipelines:
  QCcontrol: ["fastqc", "abyss", "trimmomatic", "kmergenie", "align"]
  assemble: ["abyss", "allpaths", "cabog",  "masurca", "soapdenovo", "spades", "trinity"]
- evaluate: ["align", "BUSCO"]
+ evaluete: ["align", "qaTools", "FRC", "BUSCO"]
  align: []
 Tools:
  fastqc:
@@ -44,8 +44,14 @@ Tools:
   bin: /sw/apps/bioinfo/trinity/2014-07-17/irma/ 
   options: []
  BUSCO:
-  bin: /sw/apps/bioinfo/BUSCO/1.1b1/irma/BUSCO
+  bin: /sw/apps/bioinfo/BUSCO/2.0.1/irma/BUSCO
   options:  ["-m", "genome", "-f"]
  kmergenie:
   bin: /lupus/ngi/production/latest/KmerGenie/kmergenie
   options: [""]
+ FRC:
+  bin: /lupus/ngi/production/latest/resources/singularity/nougat/FRC
+  options: ""
+ qaTools:
+  bin: /lupus/ngi/production/latest/resources/singularity/nougat/qaCompute
+  options: ""
