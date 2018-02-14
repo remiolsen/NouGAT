@@ -44,7 +44,7 @@ def main(args):
         find_problems_in_maps(placement, contigsLengthDict, contigsSequencesDict)
         return
 
-    produce_consensus(placement, gaps_overlaps, contigsLengthDict, contigsSequencesDict, args.output, args.place_last)
+    produce_consensus(placement, gaps_overlaps, contigsLengthDict, contigsSequencesDict, args.output, args.place_last, args.agp, args.agp_delete)
     return
 
 
@@ -76,7 +76,7 @@ def parse_report(opgen_report):
     return (placement, gaps_overlaps)
 
 
-def produce_consensus(placement, gaps_overlaps, contigsLengthDict, contigsSequencesDict, output, place_last):
+def produce_consensus(placement, gaps_overlaps, contigsLengthDict, contigsSequencesDict, output, place_last, agp, agp_delete):
     # I need a list with one element for each base in my map. THe problem is that
     # the OpGen report does not tell the length of the maps, therefore I need to 
     # find the maximum limit between the placments part and the gapped part
@@ -84,6 +84,10 @@ def produce_consensus(placement, gaps_overlaps, contigsLengthDict, contigsSequen
     Maps_length = {}
     ContigsToMaps = {}
     MapsToContigs = {}
+
+    agp_di = []
+    if agp_delete != None:
+        agp_di = [int(i) for i in agp_delete.split(",")]
     with open(placement, 'rb') as csvfile:
         opgenCSV = csv.reader(csvfile, delimiter='\t')
         #Chromosome, Start, End, Contig, Start, End, Orientation
@@ -126,11 +130,15 @@ def produce_consensus(placement, gaps_overlaps, contigsLengthDict, contigsSequen
 
     for Map in Maps_length:
         Maps[Map] = ["n"] * Maps_length[Map] # Start with a blank canvas
-        print "now working with Map {}".format(Map)
         if MapsToContigs[Map] is not None: # if this map has some contigs aligning
             reordered_tigs = [ctg for ctg in MapsToContigs[Map] if ctg[2].split("_")[0] not in place_last]
             last_tigs = [ctg for ctg in MapsToContigs[Map] if ctg[2].split("_")[0] in place_last]
             reordered_tigs.extend(last_tigs)
+            if agp:
+                print_agp(reordered_tigs, Maps_length[Map], output, agp_di)
+                break
+            else:
+                print "now working with Map {}".format(Map)
 
             for hit in reordered_tigs:
                 start_on_Map = hit[0] - 1
@@ -165,11 +173,78 @@ def produce_consensus(placement, gaps_overlaps, contigsLengthDict, contigsSequen
                     else:
                         Maps[Map][index] = base.title()
                     index += 1
-    #print hit
-    print "Positions in the map covered more than once {}".format(multipleHittedPositions)
-    print "Rescued bases {}".format(rescuedBases)
-    print "Conflicting bases {}".format(conflictingBases)
-    print_contigs(Maps, output)
+
+    if not agp:
+        print_contigs(Maps, output)
+        print "Positions in the map covered more than once {}".format(multipleHittedPositions)
+        print "Rescued bases {}".format(rescuedBases)
+        print "Conflicting bases {}".format(conflictingBases)
+
+def print_agp(tigs_list, chr_len, output, agp_delete):
+    """ Inefficient 'bitmap' approach to get the coordinates for an agp file. Would probably 
+        be better to use intervaltree, but I don't have time for that"""
+    intervals = [[{'n': 'n', 'pos':0}]] * (chr_len)
+    for tig in tigs_list:
+        ms = tig[0]-1
+        me = tig[1]-1
+        name = tig[2]
+        cs = tig[3]
+        ce = tig[4]
+        o = tig[5]
+        crange = range(cs, ce+1)
+        if o == '-1':
+            citer = reversed(crange)
+        else:
+            citer = iter(crange)
+        diff = 0
+        if ms+(ce-cs) > chr_len:
+            # Add more map
+            diff =  ms+(ce-cs) - chr_len
+            add_end = [[{'n': 'n', 'pos':0}]] * (diff)
+            intervals.extend(add_end)
+            me += diff
+            chr_len = len(intervals) 
+        for mi in range(ms, ms+(ce-cs)):
+            try:
+                cpos = citer.next()
+                intervals[mi] = intervals[mi] + [{'n': name, 'pos':cpos}]
+            except StopIteration:
+                # We've run out of contig sequence. No problem?
+                pass
+            except IndexError:
+                # We've run out of map. Stop!
+                print "We've seem to have run out of map?! position {}".format(mi)
+
+    if agp_delete != None:
+        sdelete = agp_delete[0]
+        edelete = agp_delete[1]
+        intervals = intervals[:sdelete] + intervals[edelete:]
+        chr_len = len(intervals)
+
+    outer = intervals[0][-1]['n']
+    output_coords = []
+    oms = 1; ocs = intervals[0][0]['pos'];
+    for mi, m in enumerate(intervals):
+        if outer != m[-1]['n'] or mi == chr_len-1:
+            if mi == chr_len-1:
+                mi += 1
+            o = "+"
+            if ocs > intervals[mi-1][-1]['pos']:
+                o = "-"
+
+            oocs = min(ocs,intervals[mi-1][-1]['pos'])
+            ooce = max(ocs,intervals[mi-1][-1]['pos'])
+
+            output_coords.append([str(oms), str(mi), outer, str(oocs), str(ooce), o])
+            oms = mi+1
+            ocs = m[-1]['pos']
+            outer = m[-1]['n']
+
+    for i, r in enumerate(output_coords):
+        if r[2] == 'n':
+            print '{}\t{}\t{}\t{}\tN\t{}\tscaffold\tyes\tmap'.format(output, r[0], r[1], i+1, int(r[1])-int(r[0])+1)
+        else:
+            print '{}\t{}\t{}\t{}\tW\t{}\t{}\t{}\t{}'.format(output, r[0], r[1], i+1, r[2], r[3], r[4], r[5])
 
 
 def revcom(s):
@@ -278,7 +353,7 @@ def _compute_assembly_stats(assembly, genomeSize):
         numNs += (counter['n'] + counter['N'])
 
     if os.path.exists(stats_file_name):
-        print "assembly stast file {} already created".format(stats_file_name)
+        #print "assembly stast file {} already created".format(stats_file_name)
         return (contigsLengthDict, contigsSequencesDict)
 
     percentageNs = float(numNs)/totalLength
@@ -369,7 +444,11 @@ if __name__ == '__main__':
             default="opgen_scaffolded_assembly", type=str)
     parser.add_argument('--place-last', 
             help="Place contigs with this prefix last on the consensus sequence", type=str)
+    parser.add_argument('--agp', help="Will output agp to stdout, and supress thre rest",
+            action='store_true', default=False)
+    parser.add_argument('--agp-delete', help='Delete a part of the sequence, ex. --agp-delete 12356,57443""', type=str)
     args = parser.parse_args()
+
     if args.genome_size == 0:
         print "genome size must be specified"
         sys.exit("error")
