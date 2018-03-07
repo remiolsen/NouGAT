@@ -18,14 +18,14 @@ CENTER, LEFT, RIGHT = 'CENTER', 'LEFT', 'RIGHT'
 
 
 def prepare_folder_structure(sorted_libraries_by_insert):
-    mainDir = os.getcwd()
-    DataFolder = os.path.join(os.getcwd(), "DATA")
+    mainDir = os.environ['PWD']
+    DataFolder = os.path.join(os.environ['PWD'], "DATA")
     if os.path.exists(DataFolder):
         sys.exit("DATA dir already exists: danger to over-write data: \
                 terminate execution")
     os.makedirs(DataFolder)
     os.chdir(DataFolder)
-    CurrentDir = os.getcwd()
+    CurrentDir = os.environ['PWD']
     #now prepare softlinks to data and give to libraries human readable names
     currentLibraryNumber = 1;
     type = ["SE", "PE", "MP"]
@@ -42,8 +42,8 @@ def prepare_folder_structure(sorted_libraries_by_insert):
     return sorted_libraries_by_insert
 
 def update_sample_config(sorted_libraries_by_insert):
-    mainDir = os.getcwd()
-    DataFolder = os.path.join(os.getcwd(), "DATA")
+    mainDir = os.environ['PWD']
+    DataFolder = os.path.join(os.environ['PWD'], "DATA")
     if not os.path.exists(DataFolder):
         sys.exit("DATA dir does not exists: we should not be here!!!!")
     os.chdir(DataFolder)
@@ -83,7 +83,7 @@ def _new_name(oldPathName, orientation, type, currentLibraryNumber,
     elif orientation == "outtie":
         newName += "MP_{}.".format(pairNumber)
     newName += oldNameTail
-    newName = os.path.join(os.getcwd(), newName)
+    newName = os.path.join(os.environ['PWD'], newName)
     return newName
 
 
