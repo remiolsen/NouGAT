@@ -141,7 +141,7 @@ def _run_allpaths(global_config, sample_config, sorted_libraries_by_insert):
     ########## ACQUIRE ALL THE INFO AND CREATE THE ASSEMBLY FOLDER
     assembler                  = "allpaths"
     outputName                 = sample_config["output"]
-    currentDirectory           = os.environ['PWD']
+    currentDirectory           = os.getcwd()
     assemblyDirectory          = os.path.join(currentDirectory, assembler)
     # in abyss case there is no exectuable
     programBIN                 = global_config["Tools"][assembler]["bin"]
@@ -501,7 +501,7 @@ def _run_soapdenovo(global_config, sample_config, sorted_libraries_by_insert):
     ########## ACQUIRE ALL THE INFO AND CREATE THE ASSEMBLY FOLDER
     assembler = "soapdenovo"
     outputName = sample_config["output"]
-    currentDirectory = os.environ['PWD'] 
+    currentDirectory = os.getcwd()
     assemblyDirectory = os.path.join(currentDirectory, assembler)
     # in cabog case there is no exectuable
     programBIN = global_config["Tools"][assembler]["bin"]
